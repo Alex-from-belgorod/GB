@@ -3,6 +3,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+
 url = 'https://hh.ru/search/vacancy'
 
 params = {
@@ -12,7 +13,8 @@ params = {
 }
 
 headers = {
-    'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.116 YaBrowser/22.1.1.1543 Yowser/2.5 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.116 '
+                  'YaBrowser/22.1.1.1543 Yowser/2.5 Safari/537.36 '
 }
 dom = BeautifulSoup(requests.get(url, headers=headers, params=params).text, 'html.parser')
 job_list = dom.find_all('div', {'class': ['vacancy-serp-item', 'vacancy-serp-item_redesigned']})
@@ -24,8 +26,7 @@ dom = BeautifulSoup(response.text, 'html.parser')
 while job_list:
     for job in job_list:
         title = job.find('a', {'data-qa': 'vacancy-serp__vacancy-title'})
-        job_dict = {'title' : title.text.replace(',', ';')}
-        job_dict['link'] = title.get('href').split('?')[0]
+        job_dict = {'title': title.text.replace(',', ';'), 'link': title.get('href').split('?')[0]}
         salary = job.find('span', {'data-qa': 'vacancy-serp__vacancy-compensation'})
 
         if salary:
@@ -52,7 +53,6 @@ while job_list:
     params['page'] = str(page_num)
     dom = BeautifulSoup(requests.get(url, headers=headers, params=params).text, 'html.parser')
     job_list = dom.find_all('div', {'class': ['vacancy-serp-item', 'vacancy-serp-item_redesigned']})
-
 
 df = pd.DataFrame(jobs)
 print(df.to_string())
